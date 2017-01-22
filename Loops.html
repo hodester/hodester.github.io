@@ -1,0 +1,175 @@
+<!DOCTYPE HTML>
+<html lang="en-us">
+<head>
+	<title>Javascript Loops</title>
+	<Meta charset="utf-8">
+	<link  rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Shadows+Into+Light%7COrbitron:400,700,500,900%7CPlayfair+Display+SC:400,400italic,700,700italic,900,900italic%7CTillana:500,400,800,700,600'>
+	<style>
+	body {font-family: 'Orbitron', 700; font-size: 20pt; }
+	</style>
+	<script type="text/javascript">
+	/*  
+	 * Examples of Javascript loop.
+	 */
+	
+	function fiveTable(){
+		var numb = 5;
+		var i = 1;
+		var text = "";
+		
+		do {
+			text += "<br>5 x " + i + " = "  + (numb * i);
+			i ++;
+		}
+		while (i <=12);
+		document.getElementById('output').innerHTML = text;
+	}
+	</script>
+</head>
+
+<body>
+<h1>A "FOR" loop counting down from 10</h1>
+<p id="forLoop"></p>
+<script>
+	var textFor = "";
+	var i;
+	for (i = 10; i > 0; i--){
+		textFor += "Loop counting: " + i + "<br>";
+		}
+	document.getElementById("forLoop").innerHTML = textFor;
+</script>
+---------------------------------------------------------------------------------------------------
+
+<h1>A "For/In" Loop.</h1>
+
+<p id="forIn"></p>
+
+<script>
+var bio = "";
+var person = {fname:"Mark", lname:"Hodes", age:36, school:"BYU-I", gender:"Male", maritalStatus:"Married", graduationDate:"July 2017"}; 
+var x;
+for (x in person) {
+    bio += person[x] + " ";
+}
+document.getElementById("forIn").innerHTML = bio;
+</script>
+---------------------------------------------------------------------------------------------------
+<h1>An example of a "While" loop</h1>
+
+<p id="whileLoop"></p>
+<script>
+var display = ""
+var i = 0;
+while (i <= 20) {
+	display += "<br>counting ... " + i;
+	i++
+	}
+document.getElementById("whileLoop").innerHTML = display;
+</script>
+
+---------------------------------------------------------------------------------------------------
+
+<h1>Display the multiplacation table of 5's from 1 to 12. (Do While Loop)
+<button type="button" onClick="fiveTable()" style="font-family:Shadows Into Light; font-size: 20pt;">Show Me</button>
+</h1>
+<div id="output"></div>
+---------------------------------------------------------------------------------------------------
+<script type="text/javascript">
+
+	function createArray(list ,multiplier){
+	
+	var array = [8,-7,-5,10,8,8,-1,-5,6,18,-3,2];
+	document.getElementById('original').innerHTML ="The array list is; " + array.join(", ");
+	var list = array;
+	var even = countEvens(list);
+	
+	
+	document.getElementById('arrayList').innerHTML ="The total number of even integers is; " + even;	
+	document.getElementById('multiply').innerHTML = "The array list multiplied by 3 is; " + multiply(list, 3).join(", ");
+	
+	}
+	
+	function countEvens(list){
+	var even = 0;
+	for (i = 0; i < list.length; i++){
+		if (list[i] % 2 == 0){
+			even += 1;}
+	}
+	return even;
+	}
+	function multiply(list, multiplier){
+	
+		for (var i = 0; i < list.length; i++){
+		list[i] *= multiplier;}
+	return list;
+	}
+	
+	</script>
+	
+<h1>An array with a multiplier</h1>
+<button type="button" onClick="createArray()">Disply Array</button>
+<div id="original"></div>
+<div id="count"></div>
+<div id="arrayList"></div>
+<div id="multiply"></div>
+
+---------------------------------------------------------------------------------------------------
+
+<h1>Associate Array Example</h1>
+<p id="AssociateArray"></p>
+
+<script>
+var person = [];
+person[0] = "John Smith";
+person[1] = "Jane Doe";
+person[2] = 46;
+person[3] = "Bill Jones";
+document.getElementById("AssociateArray").innerHTML =
+person[1] + ", " + "Array length " + person.length;
+</script>
+---------------------------------------------------------------------------------------------------
+<h1>A conditional statement using if else.</h1>
+	<script type="text/javascript">
+	/* Input: student name
+	 * Input: total number of completed number of credits
+	 * compare the number of computeted credits to the 
+	 * credits required for the grade level
+	 * 0 - 29 credits Freshman
+	 * 30 - 59 credits Sophomore
+	 * 60 - 89 credits Junior
+	 * 90+ credits Senior
+	 * output: the students name ant the current year
+	 * in school based on credits completed. 
+	 */
+
+	function schoolYear() {
+    var student = document.getElementById('name').value;
+    var credits = parseInt(document.getElementById('credits').value);
+
+    var message;
+    if (credits < 30) {
+        message = 'Fresman';
+    }
+    else if (credits >= 30 && credits < 60) {
+        message = 'Sophomore';
+    }
+    else if (credits >= 60 && credits < 90) {
+        message = 'Junior';
+	}
+	else if (credits > 90) {
+        message ='Senior';
+    }
+	document.getElementById('outputDiv').innerHTML = student + ' is now a ' + message;
+}
+	 </script>
+	  
+<p>Enter your name: <input id="name" type="text" value="First Name" onfocus="if (this.value == 'First Name') {this.value = '';}" onblur="if (this.value == '') "  placeholder="First Name">
+<br>
+Enter the total number of complted credits: <input id="credits" type="text" value="Units" onfocus="if (this.value == 'Units') {this.value = '';}" onblur="if (this.value == '') "  placeholder="Units" size="4">
+<button type="button" onclick="schoolYear()">School Year</button>
+</p>
+<div id="outputDiv"></div>
+
+</body>
+</html>
+	
