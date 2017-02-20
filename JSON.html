@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+
+<body>
+<h2>JSON object from a String</h2>
+<p id="strng"></p>
+
+<script>
+
+var obj = JSON.parse('{ "name":"Mark", "age":36, "city":"Reno"}');
+var newObj = JSON.stringify(obj);
+document.getElementById("strng").innerHTML = obj.name + ", " + obj.age + ", " + obj.city;
+document.getElementById("strng").innerHTML = newObj;
+
+</script>
+<code>
+var obj = JSON.parse('{ "name":"John", "age":30, "city":"New York"}');<br>
+document.getElementById("strng").innerHTML = obj.name + ", " + obj.age;
+</code>
+
+<h2>Convert a string into a date object.
+<br>Date parsing.
+<br>
+</h2>
+
+<p id="dateParse"></p>
+
+<script>
+
+var text = '{ "name":"Mark", "birth":"04/23/1980", "city":"Hillsboro"}';
+var obj = JSON.parse(text);
+obj.birth = new Date(obj.birth);
+
+document.getElementById("dateParse").innerHTML = obj.name + ", " + obj.birth; 
+
+</script>
+<p>Code example</p>
+<code>
+var text = '{ "name":"Mark", "birth":"23 Apr 1980", "city":"Hillsboro"}'; <br>
+var obj = JSON.parse(text);<br>
+obj.birth = new Date(obj.birth);<br>
+document.getElementById("dateParse").innerHTML = obj.name + ", " + obj.birth;
+</code>
+
+<h2>Content as Array.</h2>
+<p>Content written as an JSON array will be converted into a JavaScript array.</p>
+
+<p id="jsArray"></p>
+
+<script>
+var xmlhttp = new XMLHttpRequest();
+xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        myArr = JSON.parse(this.responseText);
+        document.getElementById("jsArray").innerHTML = myArr[0];
+    }
+};
+xmlhttp.open("GET", "json_demo_array.txt", true);
+xmlhttp.send();
+
+</script>
+
+<p>Take a look at <a href="jsonArray.txt" target="_blank">jsonArray.txt</a></p>
+<code>
+var xmlhttp = new XMLHttpRequest();<br>
+xmlhttp.onreadystatechange = function() {<br>
+    if (this.readyState == 4 && this.status == 200) {<br>
+        myArr = JSON.parse(this.responseText);<br>
+        document.getElementById("jsArray").innerHTML = myArr[0];
+    }<br>
+};<br>
+xmlhttp.open("GET", "json_demo_array.txt", true);<br>
+xmlhttp.send();
+</code>
+
+<br>
+<br>
+<h1>Resources</h1>
+<a>http://www.w3schools.com/js/js_json_parse.asp</a>
+<br>
+<a>http://www.quackit.com/html_5/tags/</a>
+<br>
+<a>https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify</a>
+<br>
+</body>
+</html>

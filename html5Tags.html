@@ -1,0 +1,38 @@
+<!DOCTYPE html> 
+<html> 
+<body> 
+<section>
+<video width="400" controls>
+  <source src="mov_bbb.mp4" type="video/mp4">
+  <source src="mov_bbb.ogg" type="video/ogg">
+  Your browser does not support HTML5 video.
+</video>
+
+<br>
+<br>
+<p>
+Video courtesy of 
+<a href="http://www.bigbuckbunny.org/" target="_blank">Big Buck Bunny</a>.
+</p>
+<br>
+<br>
+<section>
+<iframe width="420" height="345" src="https://www.youtube.com/embed/9oa0x_r5DZg?autoplay=0">
+</iframe>
+</section>
+<br>
+<br>
+<section>
+<canvas id="myCanvas" width="200" height="100" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+<script>
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+ctx.beginPath();
+ctx.arc(95,50,40,0,2*Math.PI);
+ctx.stroke();
+</script> 
+</section>
+
+</body> 
+</html>
