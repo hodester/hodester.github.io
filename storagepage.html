@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" type="text/css" href="styles.css">
+		<title>
+			CIT 261 - Local Storage
+		</title>
+	</head>
+<body>
+	<header>
+		CIT 261 - Local Storage API, Storing and Retrieving Simple Data, Arrays, Associative Arrays, and Objects
+	</header>
+<script>
+//localStorage.clear();
+document.write("<h1>Greetings " +localStorage.userName+ " from "+localStorage.Site+"." +"</h1>");
+document.write("<h1>Greetings " +sessionStorage.username+ " your "+localStorage.key(1)+" is "+localStorage.position +"." +"</h1>");
+
+document.write("<h2>"+"Number of items in the local storage: "+localStorage.length+"." +"</h2>");
+document.write("<h2>"+"Number of items in the session storage: "+sessionStorage.length+"." +"</h2>");
+
+document.write("<h2>"+"The local storage key 1 is; " +localStorage.key(1)+"."+"</h2>");
+
+document.write("<h3>The data contained in the local storage is;</h3>")
+for(var i=0, len=localStorage.length; i<len; i++) {
+    var key = localStorage.key(i);
+    var value = localStorage[key];
+    document.write("<h3>"+key + " => " + value +"</h3>");
+}
+
+</script>
+</body>
+	<footer>
+			Copyright &copy; 2017 &middot; Mark Hodes &middot; <a href="https://github.com/" target="_blank">Github</a>
+	</footer>
+</html>
