@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="styles.css">
+<title>
+CIT 261 - Using XMLHTTPRequest to Consume a JSON Web Service
+</title>
+<script>
+	window.addEventListener('load',init, false);
+    function init(e) {
+    document.getElementById('shoeButton').addEventListener('click', documentLoader, false);
+    }
+    function reqListener (){
+    var shoe = JSON.parse(this.responseText);
+                
+    document.getElementById('shoe_make').innerHTML = shoe.shoe_make;
+    document.getElementById('shoe_size').innerHTML = shoe.shoe_size;
+    document.getElementById('color').innerHTML = shoe.color;
+    }
+    function documentLoader (){
+    var aReq = new XMLHttpRequest();
+    aReq.onload = reqListener;
+    aReq.open("GET", "ajax.json", true);
+    aReq.send();
+    }
+</script>
+
+</head>
+
+<body>
+<header>
+CIT 261 - Using XMLHTTPRequest to Consume a JSON Web Service
+</header>
+
+
+
+<form id="shoeForm"> 
+<button id="shoeButton" type="button">Click Me!</button>
+</form>
+<h1>Shoe Brand</h1>
+<div id="shoe_make"></div>
+<h2>Size</h2>
+<div id="shoe_size"></div>
+<h2>Color</h2>
+<div id="color"></div>
+</body>
+<footer>
+Copyright &copy; 2017 &middot; Mark Hodes &middot; <a href="https://github.com/" target="_blank">Github</a>
+</footer>
+</html>
