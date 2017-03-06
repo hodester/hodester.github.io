@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="styles.css">
+<title>
+CIT 261 - JSON Parse, Stringify
+</title>
 </head>
 
 <body>
+<header>
+CIT 261 - JSON Parse, Stringfy
+</header>
 <h2>JSON object from a String</h2>
 <p id="strng"></p>
 
@@ -50,30 +58,34 @@ document.getElementById("dateParse").innerHTML = obj.name + ", " + obj.birth;
 <p id="jsArray"></p>
 
 <script>
-var xmlhttp = new XMLHttpRequest();
-xmlhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-        myArr = JSON.parse(this.responseText);
-        document.getElementById("jsArray").innerHTML = myArr[0];
+	window.addEventListener('load',init, false);
+    function init(e) {
+    document.getElementById('shoeButton').addEventListener('click', documentLoader, false);
     }
-};
-xmlhttp.open("GET", "json_demo_array.txt", true);
-xmlhttp.send();
-
+    function reqListener (){
+    var shoe = JSON.parse(this.responseText);
+                
+    document.getElementById('shoe_make').innerHTML = shoe.shoe_make;
+    document.getElementById('shoe_size').innerHTML = shoe.shoe_size;
+    document.getElementById('color').innerHTML = shoe.color;
+    }
+    function documentLoader (){
+    var aReq = new XMLHttpRequest();
+    aReq.onload = reqListener;
+    aReq.open("GET", "ajax.json", true);
+    aReq.send();
+    }
 </script>
 
-<p>Take a look at <a href="jsonArray.txt" target="_blank">jsonArray.txt</a></p>
-<code>
-var xmlhttp = new XMLHttpRequest();<br>
-xmlhttp.onreadystatechange = function() {<br>
-    if (this.readyState == 4 && this.status == 200) {<br>
-        myArr = JSON.parse(this.responseText);<br>
-        document.getElementById("jsArray").innerHTML = myArr[0];
-    }<br>
-};<br>
-xmlhttp.open("GET", "json_demo_array.txt", true);<br>
-xmlhttp.send();
-</code>
+<form id="shoeForm"> 
+<button id="shoeButton" type="button">Click Me!</button>
+</form>
+<h1>Shoe Brand</h1>
+<div id="shoe_make"></div>
+<h2>Size</h2>
+<div id="shoe_size"></div>
+<h2>Color</h2>
+<div id="color"></div>
 
 <br>
 <br>
@@ -85,4 +97,7 @@ xmlhttp.send();
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify</a>
 <br>
 </body>
+<footer>
+Copyright &copy; 2017 &middot; Mark Hodes &middot; <a href="https://github.com/" target="_blank">Github</a>
+</footer>
 </html>
