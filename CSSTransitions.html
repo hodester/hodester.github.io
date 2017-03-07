@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="styles.css">
+<link rel="stylesheet" href="transitions.css">
+<title>
+CIT 261 - Creating CSS3 Transitions and Animations in CSS and triggering them with JavaScript
+</title>
+
+<script>
+window.addEventListener("load", objectEvents, false);
+function objectEvents(e) {
+document.getElementById("start").addEventListener("click", startAnim, false);
+document.getElementById("stop").addEventListener("click", stopAnim, false);
+
+}
+function stopAnim() {
+document.getElementById("object").style.webkitAnimationPlayState = "paused";
+document.getElementById("object").style.AnimationPlayState = "paused";
+}
+function startAnim() {
+document.getElementById("object").style.webkitAnimationPlayState = "running";
+document.getElementById("object").style.AnimationPlayState = "running";
+}
+</script>
+</head>
+<body>
+
+<div>
+<p id="object">Floating Object</p><br>
+<br><br></div>
+<br><br>
+<div>
+<button type="button" id="start">Move</button>
+<button type="button" id="stop">Stop</button>
+</div>
+</body>
+<footer>
+Copyright &copy; 2017 &middot; Mark Hodes &middot; <a href="https://github.com/" target="_blank">Github</a>
+</footer>
+</html>
