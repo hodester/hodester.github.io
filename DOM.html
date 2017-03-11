@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="styles.css">
+<title>
+CIT 261 - DOM Manipulation Using createElement, appendChild, insertBefore, removeChild, etc.
+</title>
+</head>
+    <body>
+        <h1>A list of running shoe brands</h1>
+        <ul id="shoeBrand"></ul>
+        <p>Click button to add a shoe brand to the list</p>
+         <button onclick="deleteShoe()">Remove the last brand</button>
+		 <br>
+		 <button onclick="addShoe()">Add a Brand</button>
+
+        <script>
+        var shoes = ["MUZINO", "ASICS", "BROOKS", "HOKA", "NB", "ALTRA", "MERRELL"];
+        for (i=0; i<shoes.length; i++){
+            var makeList = document.createElement("li");
+            makeList.innerHTML = shoes[i];
+            document.getElementById("shoeBrand").appendChild(makeList);  
+    }
+    </script>
+    <script>
+        function addShoe(){
+            var newShoe = document.createElement("li");
+            var text = document.createTextNode("NIKE");
+            newShoe.appendChild(text);
+            var list = document.getElementById("shoeBrand");
+            list.insertBefore(newShoe, list.childNodes[shoes.length]);
+        }
+        </script>
+        <script>
+            function deleteShoe(){
+                var remove = document.getElementById("shoeBrand");
+                remove.removeChild(remove.childNodes[shoes.length - 1]);
+            }
+        </script>
+    </body>
+	<footer>
+	Copyright &copy; 2017 &middot; Mark Hodes &middot; <a href="https://github.com/" target="_blank">Github</a>
+	</footer>
+</html>
+
