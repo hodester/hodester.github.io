@@ -26,6 +26,9 @@
     <script src="Scripts/swapImage.js"></script>
     <script src="Scripts/tleCalculator.js"></script>
     <script src="Scripts/latLongLoc.js"></script>
+    <script src="Scripts/mapFuncs.js"></script>
+    <!-- This is to handle a canvase resize for responsive behavior -->
+    <script src="Scripts/jquery-3.1.1.min.js"></script>
 </head>
 
 <body onload="initPageData(); line();">
@@ -83,6 +86,59 @@
                     function UpdateInputField() {
                         document.getElementById('locationLatLong').value = document.getElementById('selectPosition').value;
                     }
+
+                    /*
+                        The problem that this is running into is that the globe is cut into 4 quadrants and this logic 
+                        does not handle the 4 quadrants. North, South, East, West. Each section is broken into Degrees
+                        0 to 180 from the equator to the polls and from the through London, England (UTC)
+                        to the International Dateline between Russia and the United States.
+
+                        If we can solve this mathematical issue then we can move the sat correctly accross the image.
+                    */
+                    function UpdateSatPosition() {
+                        var maxDegree = 360;
+                        // Max Image Size
+                        var horizontalRatio = 1 / (360 / 1000);
+                        var verticalRatio = 1 / (360 / 500);
+
+                        /* Update Satellite location on page */
+                        var screenXOffset = 35; // Move the default sat icon in the width of the sat image pixels (Sat=30 distance from image 5)
+                        var screenYOffset = -512;
+
+                        var screenX = parseInt(Tracker.SatelliteLongitude.value.split(" ")[0]);
+                        var screenY = parseInt(Tracker.SatelliteGeocentricLatitude.value.split(" ")[0]);
+
+                        // if (Tracker.SatelliteLongitude.value.split(" ")[0] == "West") {
+                        //     screenX *= -1;
+                        // }
+
+                        // if (Tracker.SatelliteGeocentricLatitude.value.split(" ")[0] == "South") {
+                        //     screenY *= -1;
+                        // }
+
+                        // console.log("Raw Longitude = " + screenX);
+                        // console.log("Raw Latitude = " + screenY);
+
+                        screenX *= horizontalRatio;
+                        screenY *= verticalRatio;
+
+                        // console.log("Raw Longitude Ratio = " + screenX);
+                        // console.log("Raw Latitude Ratio = " + screenY);
+
+                        screenX = Math.abs(screenX);
+                        screenY = Math.abs(screenY);
+
+                        screenX += screenXOffset;
+                        screenY += screenYOffset;
+
+                        console.log("Adjusted Longitude = " + screenX);
+                        console.log("Adjusted Latitude = " + screenY);
+
+                        var redbox = document.getElementById("redbox");
+                        redbox.style.left = screenX + "px";
+                        redbox.style.top = screenY + "px";
+                        /* Update Satellite location on page */
+                    }
                 </script>
                 <div class="col-md-12">
                     <label>GPS Coordinates</label></br>
@@ -103,9 +159,21 @@
                     <br/><br />
                 </div>
                 <div id="map" class="col-md-12">
-<!--                    <img id="imageToSwap" src="Images/WorldMap01.png">-->
                     <img id="redbox" src="Images/satallite.png">
-                    <canvas id="imageToSwap"></canvas>
+                    <canvas id="altImageToSwap"></canvas>
+                    <script>
+                        //http://stackoverflow.com/questions/34772957/how-to-make-canvas-responsive
+                        function resize() {
+                            $("#altImageToSwap").outerHeight($(window).height() - $("#altImageToSwap").offset().top - Math.abs($("#altImageToSwap").outerHeight(true) - $("#altImageToSwap").outerHeight()));
+                            $("#altImageToSwap").outerWidth($(window).width() - $("#altImageToSwap").offset().top - Math.abs($("#altImageToSwap").outerWidth(true) - $("#altImageToSwap").outerWidth()));
+                        }
+                        $(document).ready(function() {
+                            resize();
+                            $(window).on("resize", function() {
+                                resize();
+                            });
+                        });
+                    </script>
                 </div>
                 <div class="col-md-12">
                     Adapted from: Jens T. Satre - <a href="http://www.satellite-calculations.com/" target="_blank">http://www.satellite-calculations.com/</a>
@@ -945,8 +1013,11 @@
                     </form>
                     <!-- Jens T. Satre - http://www.satellite-calculations.com/ -->
                 </div>
+                <div class="col-md-12">
+                    <img id="imageToSwap" src="Images/WorldMap01.png">
+
+                </div>
             </div>
-        </div>
         </div>
     </section>
     <footer class="container">
