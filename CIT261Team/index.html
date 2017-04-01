@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Satellite Position Calculator</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Language" content="en-us" />
+    <meta name="Robots" content="Follow, Index" />
+    <meta name="Distribution" content="Worldwide" />
+    <meta name="Rating" content="General" />
+
+    <meta name="DESCRIPTION" content="Awesome Animated Calculator - Orbital path calculator." />
+    <meta name="KEYWORDS" content="CIT 261, BYU-Idaho, Satellite Calculator" />
+    <meta name="School" content="BYU-Idaho" />
+
+    <link rel="stylesheet" href="styles.css" />
+
+    <script src="Scripts/globalObjects.js"></script>
+    <script src="Scripts/readTleData.js"></script>
+    <script src="Scripts/loadTleData.js"></script>
+    <script src="Scripts/pageData.js"></script>
+    <script src="Scripts/swapImage.js"></script>
+    <script src="Scripts/tleCalculator.js"></script>
+    <script src="Scripts/latLongLoc.js"></script>
+</head>
+
+<body onload="initPageData()">
+    <header class="container">
+        <h1>Satellite Position Calculator</h1>
+        <nav>
+            <div class="dropdown">
+                <div ontouch="showSatLinks()" onmouseover="showSatLinks()" class="dropbtn">Satellites</div>
+                <div id="satSelector" class="dropdown-content">
+                </div>
+            </div>
+            <div class="dropdown">
+                <div ontouch="showMapLinks()" onmouseover="showMapLinks()" class="dropbtn">World Maps</div>
+                <div id="mapSelector" class="dropdown-content">
+                    <a href="javascript:swapImage('Images/WorldMap01.png', 'imageToSwap')">World Map</a>
+                    <a href="javascript:swapImage('Images/WorldMap04.jpg', 'imageToSwap')">World Cities</a>
+                    <a href="javascript:swapImage('Images/WorldMap05.jpg', 'imageToSwap')">World Map 2</a>
+                    <a href="javascript:swapImage('Images/WorldMap06.jpg', 'imageToSwap')">World Map 3</a>
+                    <a href="javascript:swapImage('Images/WorldMap03.jpg', 'imageToSwap')">Time Zones</a>
+                    <a href="javascript:swapImage('Images/WorldMap02.jpg', 'imageToSwap')">Elements</a>
+                    <a href="javascript:swapImage('Images/MiddleEarth01.jpg', 'imageToSwap')">Middle Earth 1</a>
+                    <a href="javascript:swapImage('Images/MiddleEarth02.jpg', 'imageToSwap')">Middle Earth 2</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <section>
+        <div class="container body-content">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Based on TLE data</h2>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <hr />
+                    </div>
+                </div>
+                <script>
+                    function doButtonActions() {
+
+                        readTleData(document.getElementById('TleDataId').value);
+                        getTLEfromTextAerea();
+                        onchange_satellite_rev_siderealday();
+
+                        ReadPosition();
+                        CalculateCoordinate();
+                        SetCookie();
+                        ManualTimeUpdate()
+
+                        var locData = document.getElementById('locationLatLong').value;
+                        localStorage.setItem('latlong', locData);
+                    }
+
+                    function UpdateInputField() {
+                        document.getElementById('locationLatLong').value = document.getElementById('selectPosition').value;
+                    }
+                </script>
+                <div class="col-md-12">
+                    <label>GPS Coordinates</label></br>
+                    <input id="locationLatLong" type="text" value="" />
+                </div>
+                <div class="col-md-12">
+                    <label title="Select your nearest location or set the position manually">Select your nearest location or set the position manually</label></br>
+                    <select id="selectPosition" name="selectPosition" size="11" onchange="UpdateInputField();">
+                        <script language="javascript">
+                            document.write(sites);
+                        </script>
+                    </select>
+                </div>
+                <div class="col-md-12">
+                    <label>Enter a TLE Data String: </label><br/>
+                    <textarea cols="4" class="textarea" id="TleDataId" type="text" value="" style="width: 200px;"></textarea><br />
+                    <button onclick="doButtonActions();">Input TLE</button>
+                    <br/><br />
+                </div>
+                <div id="map" class="col-md-12">
+                    <img id="imageToSwap" src="Images/WorldMap01.png">
+                </div>
+                <div class="col-md-12">
+                    Adapted from: Jens T. Satre - <a href="http://www.satellite-calculations.com/" target="_blank">http://www.satellite-calculations.com/</a>
+                    </br>
+                </div>
+                <div class="col-md-12">
+                    <form method="post" name="Tracker" style="min-width: 680px; background-color: #C0C0C0;">
+                        <div class="row">
+                            <div class="col-md-4">
+                                &nbsp;
+                            </div>
+                            <div class="col-md-4">
+                                &nbsp;
+                            </div>
+                            <div class="col-md-4">
+                                &nbsp;
+                            </div>
+                        </div>
+                        <!-- Jens T. Satre - http://www.satellite-calculations.com/ -->
+                        <div class="row">
+                            <div class="col-md-4">
+                                Site Latitude
+                            </div>
+                            <div class="col-md-4">
+                                Degrees
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" size="6" name="LatitudeDegrees" value="59.92" onchange="SetCookie();CalculateCoordinate();ManualTimeUpdate()">
+                                <select name="LatitudeDirection" size="1" onchange="SetCookie();CalculateCoordinate();ManualTimeUpdate()">
+                                    <option selected value="North">North</option>
+                                    <option value="South">South</option>
+                                </select>
+                                <input type="text" size="1" name="LatDegrees" onchange="CalculateLat();SetCookie();CalculateCoordinate();ManualTimeUpdate()">deg.
+                                <input type="text" size="1" name="LatMinutes" onchange="CalculateLat();SetCookie();CalculateCoordinate();ManualTimeUpdate()">min
+                                <input type="text" size="1" name="LatSeconds" onchange="CalculateLat();SetCookie();CalculateCoordinate();ManualTimeUpdate()">sec
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Site Longitude
+                            </div>
+                            <div class="col-md-4">
+                                Degrees
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" size="6" name="LongitudeDegrees" value="10.75" onchange="SetCookie();CalculateCoordinate();ManualTimeUpdate()">
+                                <select name="LongitudeDirection" size="1" onchange="SetCookie();CalculateCoordinate();ManualTimeUpdate()">
+                                            <option selected value="East">East</option>
+                                            <option value="West">West</option>
+                                        </select>
+                                <input type="text" size="1" name="LonDegrees" onchange="CalculateLon();SetCookie();CalculateCoordinate();ManualTimeUpdate()">deg.
+                                <input type="text" size="1" name="LonMinutes" onchange="CalculateLon();SetCookie();CalculateCoordinate();ManualTimeUpdate()">min
+                                <input type="text" size="1" name="LonSeconds" onchange="CalculateLon();SetCookie();CalculateCoordinate();ManualTimeUpdate()">sec
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Epoch time
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="DateEpoch" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Time elepsed since epoch
+                            </div>
+                            <div class="col-md-4">
+                                hh:mm:ss
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="TimeElepsedSinceEpoch" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                TLE data and time format
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="TimeEpochFormat">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Julian Day
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="JulianDay">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Modified Julian Day
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="ModifiedJulianDay">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Days since J2000.0
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="dJ2000">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Day
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" size="2" name="DayNow" value="1" onchange="ManualTimeUpdate()">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Month
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" size="2" name="MonthNow" value="10" onchange="ManualTimeUpdate()">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Year
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" size="4" name="YearNow" onchange="ManualTimeUpdate()">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Hour
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" size="4" name="HourNow" value="00" onchange="ManualTimeUpdate()">(UTC)
+                                <input onclick="onchange_satellite_rev_siderealday();TimeUpdateNow()" type=button value="Get UTC time now" name=button3>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Minute
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" size="4" name="MinuteNow" value="" onchange="ManualTimeUpdate()">(UTC)
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Second
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" size="4" name="SecondNow" value="" onchange="ManualTimeUpdate()">(UTC)
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Time of calculation
+                            </div>
+                            <div class="col-md-4">
+                                Local time (if offset from UTC)
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="TimeOfCalculation" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Satellite common name
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="CommonName" value="">from TLE
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Object Id
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="ObjectID" value="">from TLE
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                International Designator
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="InternationalDesignator" value="">from TLE
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Elset Classification
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="ElsetClassification" value="">from TLE
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Number of orbits at Epoch
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="NumberOfOrbitsAtEpoch" value="">from TLE
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Number of orbits now
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="NumberOfOrbitsNow" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Earth Rev/solarday
+                            </div>
+                            <div class="col-md-4">
+                                rev/day
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Earth_rev_solar_day" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Earth Deg/solarday
+                            </div>
+                            <div class="col-md-4">
+                                deg/day
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Earth_deg_solar_day" value="">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                Earth Rev/siderealday
+                            </div>
+                            <div class="col-md-4">
+                                rev/day
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Earth_rev_sidereal_day" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Earth Deg/siderealday
+                            </div>
+                            <div class="col-md-4">
+                                deg/day
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Earth_deg_sidereal_day" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Satellite Deg/siderealday
+                            </div>
+                            <div class="col-md-4">
+                                deg/day
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Satellite_deg_sidereal_day" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Satellite Rev/sidereal
+                            </div>
+                            <div class="col-md-4">
+                                rev/day
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Satellite_rev_solar_day" onchange="onchange_satellite_rev_solarday();calculatedriftrate()" value="">(calculated for the time selected)
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Satellite Deg/solarday
+                            </div>
+                            <div class="col-md-4">
+                                deg/day
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Satellite_deg_solar_day" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Epoch
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Epoch">from TLE
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Inclination
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Inclination">from TLE
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Right Ascension of Ascending node
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="RA_AN">from TLE
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Eccentricity
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Eccentricity">from TLE
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Argument of perigee
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Argument_of_perigee">from TLE
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Mean anomaly, M0
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Meananomaly">at reference time (from TLE)
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Mean anomaly Calculated
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="MeananomalyCalculated" value="">calculated for time selected
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                True anomaly (v)
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Trueanomaly">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Mean Motion from TLE data
+                            </div>
+                            <div class="col-md-4">
+                                rev/day (Satellite Rev/solarday)
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Satellite_rev_sidereal_day">from TLE
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Current Motion
+                            </div>
+                            <div class="col-md-4">
+                                rev/day
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Current_Motion" onchange="onchange_satellite_rev_solarday();calculatedriftrate()" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                1st derative of the Mean Motion
+                            </div>
+                            <div class="col-md-4">
+                                rev/day^2
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="first_derative_mean_motion">from TLE
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Eccentric anomaly before iterations
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="EccentricanomalyBeforeIterations" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Eccentric anomaly error before iterations
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="EccentricanomalyErrorBeforeIterations" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Eccentric anomaly after iterations
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="EccentricanomalyAfterIterations" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Eccentric anomaly error after iterations
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="EccentricanomalyErrorAfterIterations" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Number of eccentric anomaly iterations
+                            </div>
+                            <div class="col-md-4">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Iterations" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Xo orbital plane
+                            </div>
+                            <div class="col-md-4">
+                                km
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="X_orbit_plane" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Yo orbital plane
+                            </div>
+                            <div class="col-md-4">
+                                km
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Y_orbit_plane" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                r orbital plane
+                            </div>
+                            <div class="col-md-4">
+                                km
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="r_orbit_plane" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Geocentric, x
+                            </div>
+                            <div class="col-md-4">
+                                km
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="x_geocentric" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Geocentric, y
+                            </div>
+                            <div class="col-md-4">
+                                km
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="y_geocentric" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Geocentric, z
+                            </div>
+                            <div class="col-md-4">
+                                km from equator
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="z_geocentric" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Right Ascension
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="RA" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                GMST
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="GMST" value=""><input type="text" name="GMST2" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Declination
+                            </div>
+                            <div class="col-md-4">
+                                deg (current inclination)
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="declination" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Satellite E/W oscillation caused by inclination
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="EW_oscillation_caused_by_inclination" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Satellite E/W oscillation caused by eccentricity
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="EW_oscillation_caused_by_eccentricity" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Current Driftrate
+                            </div>
+                            <div class="col-md-4">
+                                deg/day
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Driftrate" value="">
+                                <input type="text" name="Direction" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Average Driftrate
+                            </div>
+                            <div class="col-md-4">
+                                deg/day
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="AverageDriftrate" value="">
+                                <input type="text" name="AverageDriftrateDirection" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Longitude Driftrate
+                            </div>
+                            <div class="col-md-4">
+                                deg/day
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="LongitudeDriftrate" value="">
+                                <input type="text" name="LongitudeDriftrateDirection" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Longitude after 24hours
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="LongitudeAfter24Hours" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Altitude
+                            </div>
+                            <div class="col-md-4">
+                                km
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Altitude" value=""> from GEO now:
+                                <input type="text" name="GeoAltitude" value=""> Average from GEO:
+                                <input type="text" name="AvrGeoAltitude" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Altitude (Geodetic)
+                            </div>
+                            <div class="col-md-4">
+                                km
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="GeoDeticAltitude" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Satellite period,TC
+                            </div>
+                            <div class="col-md-4">
+                                hh:mm:ss
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="TC" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Nominal GEO period
+                            </div>
+                            <div class="col-md-4">
+                                hh:mm:ss
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="GeoTC" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Satellite velocity
+                            </div>
+                            <div class="col-md-4">
+                                km/s
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Velocity" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Altitude at Perigee
+                            </div>
+                            <div class="col-md-4">
+                                km
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Perigee" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Altitude at Apogee
+                            </div>
+                            <div class="col-md-4">
+                                km
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Apogee" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Semi-Major-Axis
+                            </div>
+                            <div class="col-md-4">
+                                km
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Semimajoraxis" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Semi-Minor-Axis
+                            </div>
+                            <div class="col-md-4">
+                                km
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="Semiminoraxis" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Satellite Longitude
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="SatelliteLongitude" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Satellite Geocentric Latitude
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="SatelliteGeocentricLatitude" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Satellite Geodetic Latitude
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="SatelliteGeodeticLatitude" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Satellite Azimuth
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="SatelliteAzimuth" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Satellite Elevation
+                            </div>
+                            <div class="col-md-4">
+                                deg
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="SatelliteElevation" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                Satellite Range
+                            </div>
+                            <div class="col-md-4">
+                                km
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="SatelliteRange" value="">
+                            </div>
+                        </div>
+                        <input onclick="generate_listings()" type=button value="Generate 170 hour @ 1 hour interval listings" name=button2>
+                        <input onclick="generate_24hour_listings()" type=button value="Generate 24 hour @ 1 minute interval listings" name=button4>
+                    </form>
+                    <!-- Jens T. Satre - http://www.satellite-calculations.com/ -->
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+    <footer class="container">
+        <div id="Footer" class="col-md-12 footer">
+            CIT 261 Satellite Calculator Project
+        </div>
+    </footer>
+
+    <script>
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(accept, decline);
+        }
+
+        function accept(position) {
+            // Put the latitude and longitude into a string
+            //var latlong = position.coords.latitude + "," + position.coords.longitude;
+            var tLong = "";
+            var tLat = "";
+
+            if (position.coords.latitude >= 0) {
+                tLat = position.coords.latitude + ":North";
+            } else {
+                tLat = (position.coords.latitude * -1) + ":South";
+            }
+            console.log(tLat);
+
+            if (position.coords.longitude >= 0) {
+                tLong = position.coords.longitude + ":East";
+            } else {
+                tLong = (position.coords.longitude * -1) + ":West";
+            }
+            console.log(tLong);
+
+            //40.75:North,111.92:West,USA - Salt Lake City- UT
+
+            var latlong = tLat + "," + tLong + ",Auto GPS";
+            console.log(latlong);
+
+            // Put string into the location form
+            var location = document.getElementById("locationLatLong");
+            location.value = latlong;
+        }
+        // If the user declined geolocation tracking
+        function decline() {
+            // DEBUGGING
+            console.log("Rejected geolocation");
+        }
+    </script>
+</body>
+
+</html>
